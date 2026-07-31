@@ -43,9 +43,10 @@
             z-index: 2;
         }
 
+        /* الترويسة الجديدة: الخيارات اليمين واليسار كمستطيلات عمودية، والوسط للسكورات */
         .top-panel-wrapper {
             display: flex;
-            align-items: center;
+            align-items: stretch;
             justify-content: space-between;
             width: 95vw;
             max-width: 450px;
@@ -53,62 +54,65 @@
             gap: 6px;
         }
 
-        .side-group {
+        .side-column {
             display: flex;
+            flex-direction: column;
             gap: 4px;
+            width: 52px;
+            flex-shrink: 0;
         }
 
         .mode-btn {
-            width: 30px;
-            height: 42px;
+            width: 100%;
+            height: 22px;
             background: linear-gradient(135deg, #ffe57f 0%, #FFD700 60%, #e6c200 100%);
             border: 2px solid #b8860b;
-            border-radius: 6px;
+            border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #000000;
-            font-size: 0.85em;
+            font-size: 0.75em;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 0 3px 0 #b8860b;
+            box-shadow: 0 2px 0 #b8860b;
             transition: transform 0.1s, filter 0.1s;
         }
         .mode-btn:active { transform: scale(0.92); filter: brightness(0.85); }
 
         .scores-center-group {
             display: flex;
-            gap: 8px;
-            flex: 2;
+            gap: 6px;
+            flex: 1;
             justify-content: center;
         }
 
         .custom-rect { 
             flex: 1; 
-            height: 68px; 
+            height: 72px; 
             background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); 
             border: 2.5px solid #FFD700; 
             border-radius: 8px; 
-            box-shadow: 0 6px 0 #0f171e; 
+            box-shadow: 0 5px 0 #0f171e; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             position: relative; 
             transition: all 0.3s ease; 
         }
-        .sum-text { font-size: 2.2em; font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.7); line-height: 1; font-family: 'Arial Black', sans-serif; }
+        .sum-text { font-size: 2.1em; font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.7); line-height: 1; font-family: 'Arial Black', sans-serif; }
         
         .flash-glow { animation: quickFlash 0.35s ease forwards; }
         @keyframes quickFlash {
-            0% { box-shadow: 0 6px 0 #0f171e, 0 0 2px #fff; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); }
-            50% { box-shadow: 0 6px 0 #0f171e, 0 0 25px #00ffcc; background: linear-gradient(135deg, #00897b 0%, #004d40 100%); border-color: #fff; }
-            100% { box-shadow: 0 6px 0 #0f171e, 0 0 2px #fff; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); }
+            0% { box-shadow: 0 5px 0 #0f171e, 0 0 2px #fff; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); }
+            50% { box-shadow: 0 5px 0 #0f171e, 0 0 25px #00ffcc; background: linear-gradient(135deg, #00897b 0%, #004d40 100%); border-color: #fff; }
+            100% { box-shadow: 0 5px 0 #0f171e, 0 0 2px #fff; background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); }
         }
 
         .winner-glow { animation: winnerPulse 0.8s infinite alternate !important; border: 3px solid #fff !important; background: linear-gradient(135deg, #ff8f00 0%, #e65100 100%) !important; }
         @keyframes winnerPulse {
-            0% { box-shadow: 0 6px 0 #bf360c, 0 0 12px #ff8f00; transform: scale(1); }
-            100% { box-shadow: 0 6px 0 #bf360c, 0 0 30px gold; transform: scale(1.04); }
+            0% { box-shadow: 0 5px 0 #bf360c, 0 0 12px #ff8f00; transform: scale(1); }
+            100% { box-shadow: 0 5px 0 #bf360c, 0 0 30px gold; transform: scale(1.04); }
         }
 
         .small-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 450px; perspective: 1000px; padding-bottom: 5px; }
@@ -181,24 +185,24 @@
 <body onclick="makeFullScreen()">
     <div class="game-viewport" id="gameViewport">
         <div class="top-panel-wrapper">
-            <!-- Left Side: Modes 3, 4, 5 -->
-            <div class="side-group">
+            <!-- Left Column: 3 Buttons -->
+            <div class="side-column">
                 <div class="mode-btn" onclick="playSound('click'); setMode(3)">3</div>
                 <div class="mode-btn" onclick="playSound('click'); setMode(4)">4</div>
                 <div class="mode-btn" onclick="playSound('click'); setMode(5)">5</div>
             </div>
 
-            <!-- Center: Scores Side by Side -->
+            <!-- Center: Scores Side by Side occupying major space -->
             <div class="scores-center-group">
                 <div id="rect1" class="custom-rect"><div id="box1" class="sum-text">0</div></div>
                 <div id="rect2" class="custom-rect"><div id="box2" class="sum-text">0</div></div>
             </div>
 
-            <!-- Right Side: Key, Free, Mix -->
-            <div class="side-group">
+            <!-- Right Column: 3 Buttons -->
+            <div class="side-column">
                 <div class="mode-btn" onclick="playSound('click'); activateKeyMode()">🔑</div>
-                <div class="mode-btn" onclick="playSound('click'); activateFreeMode()" style="font-size: 0.45em;">FREE</div>
-                <div class="mode-btn" onclick="playSound('click'); resetAndShuffle()" style="font-size: 0.4em; font-weight: 900;">MIX</div>
+                <div class="mode-btn" onclick="playSound('click'); activateFreeMode()" style="font-size: 0.42em;">FREE</div>
+                <div class="mode-btn" onclick="playSound('click'); resetAndShuffle()" style="font-size: 0.38em; font-weight: 900;">MIX</div>
             </div>
         </div>
 
@@ -373,7 +377,6 @@
 
         function shuffleArray(array) {
             let currentIndex = array.length, randomIndex;
-            // استخدام خوارزمية خلط عشوائية بحتة ومتقدمة لضمان عدم ثبات أو تمركز أي عنصر في مكان محدد عند بدء اللعبة
             for (let t = 0; t < 5; t++) {
                 currentIndex = array.length;
                 while (currentIndex !== 0) {
