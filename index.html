@@ -349,9 +349,8 @@
         ];
 
         function shuffleArray(array) {
-            // استخدام خوارزمية Fisher-Yates المتقدمة مع خلط متعدد لضمان عشوائية حقيقية 100% ومنع أي ثبات أو تمركز مسبق
             let arr = [...array];
-            for (let round = 0; round < 3; round++) {
+            for (let round = 0; round < 5; round++) {
                 for (let i = arr.length - 1; i > 0; i--) {
                     let j = Math.floor(Math.random() * (i + 1));
                     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -497,24 +496,7 @@
             document.getElementById('box2').innerText = 0;
             document.getElementById('rect1').classList.remove('winner-glow', 'flash-glow');
             document.getElementById('rect2').classList.remove('winner-glow', 'flash-glow');
-            openOrder.forEach((item, index) => {
-                let val = parseInt(item.val);
-                if(index < mode) s1 += val;
-                else if(index < (mode * 2)) s2 += val;
-            });
-            
-            document.getElementById('box1').innerText = s1;
-            document.getElementById('box2').innerText = s2;
-
-            if (openOrder.length >= (mode * 2)) {
-                let rect1 = document.getElementById('rect1');
-                let rect2 = document.getElementById('rect2');
-                
-                rect1.classList.remove('winner-glow');
-                rect2.classList.remove('winner-glow');
-
-                (s1 > s2) ? rect1.classList.add('winner-glow') : (s2 > s1) ? rect2.classList.add('winner-glow') : null;
-            }
+            openOrder = [];
         }
 
         function resetAndShuffle() {
@@ -540,10 +522,29 @@
                 let cardBack = card.querySelector('.back');
                 if(cardBack) cardBack.classList.remove('row-glow-effect');
             }
+            renderGrid();
         }
 
-        function setMode(m) { mode = m; keyMode = false; freeMode = false; resetAndShuffle(); }
-        function activateFreeMode() { freeMode = true; keyMode = false; clearSums(); let cards = Array.from(document.querySelectorAll('.flip-card')); for(let card of cards) { card.classList.remove('flipped'); let cardBack = card.querySelector('.back'); if(cardBack) cardBack.classList.remove('row-glow-effect'); } }
+        function setMode(m) { 
+            mode = m; 
+            keyMode = false; 
+            freeMode = false; 
+            resetAndShuffle(); 
+        }
+
+        function activateFreeMode() { 
+            freeMode = true; 
+            keyMode = false; 
+            clearSums(); 
+            let cards = Array.from(document.querySelectorAll('.flip-card'));
+            for(let card of cards) {
+                card.classList.remove('flipped');
+                let cardBack = card.querySelector('.back');
+                if(cardBack) cardBack.classList.remove('row-glow-effect');
+            }
+            renderGrid();
+        }
+
         function makeFullScreen() { document.documentElement.requestFullscreen(); }
         
         renderGrid();
