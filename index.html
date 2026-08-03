@@ -1,444 +1,553 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>تحدي البومب - التصميم الأصلي مع تخزين الأسماء</title>
-<style>
-  @import url('https://fonts.cdnfonts.com/css/habeba');
-  @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@800&display=swap');
-  * { -webkit-tap-highlight-color: transparent; outline: none; user-select: none; box-sizing: border-box; }
-  
-  body { margin: 0; padding: 0; background: radial-gradient(circle at center, #fceabb 0%, #fccd4d 50%, #f8b500 100%) !important; font-family: 'Habeba', sans-serif; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-  
-  .top-frame, .game-frame { margin: 2px; border: none !important; background: transparent !important; }
-  .top-bar { height: 100%; background: transparent !important; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2px; gap: 2px; position: relative; }
-  .game-frame { flex: 1; margin: 5px; background: transparent !important; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <style>
+        * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            padding: 2px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background: #FFD700; 
+            min-height: 100vh; 
+            font-family: 'Arial Black', sans-serif; 
+            overflow: hidden; 
+            touch-action: none; 
+            position: relative;
+        }
 
-  .bomb-balls { position: absolute; left: 5px; top: 10px; display: flex; gap: 4px; z-index: 20; }
-  .ball { width: 10px; height: 10px; background-color: #ff0000; border-radius: 50%; box-shadow: 0 0 5px red; }
-  .sum-box { width: 100%; height: 70px; background: #000; border: 2px solid #fff; color: #fff; text-align: center; font-size: 45px; font-weight: 900; line-height: 65px; border-radius: 4px; margin-bottom: 5px; }
-  .main-row { display: flex; align-items: stretch; justify-content: center; gap: 5px; width: 100%; height: 70px; }
-  .neon-rect { background: #000; border: 2px solid #00f2ff; box-shadow: 0 0 10px #00f2ff; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 4px; flex: 1; font-size: 24px; font-weight: 900; }
-  .title-center { flex: 2; background: #000; border: 2px solid #ff00ff; border-radius: 4px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 0 15px #ff00ff; }
-  .tufuli-neon { font-family: 'Almarai', sans-serif; color: #ff00ff; font-size: 18px; font-weight: 900; text-align: center; position: absolute; transition: opacity 1s; width: 100%; }
-  
-  .modal { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(252, 234, 187, 0.98) 0%, rgba(248, 181, 0, 0.98) 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 10px; }
-  .modal-box { 
-      background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
-      border: 4px solid #000; 
-      border-radius: 30px; 
-      width: 100%; 
-      max-width: 480px; 
-      padding: 25px; 
-      text-align: center; 
-      box-shadow: 0 0 25px rgba(184, 134, 11, 0.6);
-      position: relative;
-      overflow: hidden;
-      animation: goldShine 3s infinite alternate;
-  }
+        .game-viewport {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+            transform-origin: center center;
+            will-change: transform;
+            z-index: 2;
+        }
 
-  @keyframes goldShine {
-      0% { background-position: 0% 50%; border-color: #555; }
-      100% { background-position: 100% 50%; border-color: gold; }
-  }  
-  .modal-title { font-family: 'Almarai', sans-serif; font-size: 28px; color: #000; text-shadow: none; margin-bottom: 20px; font-weight: 900; }
-  
-  .team-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .team-input { width: 100%; padding: 10px; border-radius: 10px; border: 3px solid #000; background: #fff; color: #000; font-family: 'Habeba'; font-size: 22px; text-align: center; }
-  .opt-row { display: flex; justify-content: space-around; margin: 15px 0; background: rgba(0,0,0,0.1); padding: 12px; border-radius: 12px; border: 2px solid #000; color: #000; font-weight: 900; }
-  select { padding: 8px; border-radius: 8px; background: #000; color: gold; border: 2px solid gold; font-family: 'Habeba'; font-size: 20px; }
-  
-  .start-btn { width: 100%; padding: 18px; background: #000; color: gold; font-weight: 900; font-size: 24px; border-radius: 15px; border: 2px solid gold; font-family: 'Habeba'; cursor: pointer; margin-top: 10px; box-shadow: 0 5px 0 #333; transition: 0.1s; }
-  .start-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #333; }
-  
-  .teams-row { display: flex; gap: 5px; justify-content: center; width: 100%; height: 45%; margin-top: 5px; flex-wrap: wrap; }
-  .team-box { min-width: 60px; flex: 1; height: 100%; border-radius: 12px; border: 3.5px solid #333; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px; transition: 0.3s; }
-  .team-box.active { border-color: #ccff00; box-shadow: 0 0 30px #ccff00, inset 0 0 15px #ccff00; background: #0a1f0a; transform: scale(1.03); }
-  
-  .t-name { background:transparent; border:none; color:gold; text-align:center; width:100%; font-weight:900; font-size:18px; }
-  .t-score { background:transparent; border:none; color:white; text-align:center; width:100%; font-weight:900; font-size:40px; }
-  
-  .game-area { height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; padding: 5px; }
-  .grid-container { display: grid; gap: 6px; width: 100%; height: 100%; max-width: 50vh; padding: 20px; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; }
-  
-  .square { background: radial-gradient(circle at 40% 40%, #2c3e50, #000); border-radius: 8px; border: 1.5px solid #444; position: relative; cursor: pointer; transform-style: preserve-3d; transition: transform 0.6s; box-shadow: 0 5px 0 #111; display: flex; align-items: center; justify-content: center; }
-  .outer-num { color: #a3e635; text-shadow: 2px 2px 4px #000; font-size: 4.2vh; font-weight: 900; z-index: 2; }
-  .inner-face { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4.2vh; font-weight: 900; transform: rotateY(180deg); backface-visibility: hidden; border-radius: 8px; }
-  .square.open .outer-num { display: none; }
-  .square.open { transform: rotateY(180deg); }
-  .bg-white-special { background: #ffffff !important; color: #000 !important; }
-  .bg-red { background: #7f1d1d; } .bg-green { background: #14532d; } .bg-blue { background: #1e3a8a; } .bg-yellow { background: #a16207; } .bg-purple { background: #581c87; }
-  .square.shatter { animation: shatterAnim 0.8s forwards; pointer-events: none; }
-  @keyframes shatterAnim { 0% { transform: rotateY(180deg) scale(1); opacity: 1; } 100% { transform: rotateY(180deg) scale(0) rotate(20deg); opacity: 0; } }
-  .shake { animation: shakeAnim 0.8s both; }
-  @keyframes shakeAnim { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } }
-</style>
+        .top-panel-wrapper {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            width: 95vw;
+            max-width: 450px;
+            margin-bottom: 8px;
+            gap: 6px;
+        }
+
+        .side-column {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 52px;
+            flex-shrink: 0;
+        }
+
+        .mode-btn {
+            width: 100%;
+            height: 22px;
+            background: #FFD700;
+            border: 2px solid #b8860b;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000000;
+            font-size: 0.75em;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #b8860b;
+            transition: transform 0.1s, filter 0.1s;
+        }
+        .mode-btn:active { transform: scale(0.92); filter: brightness(0.85); }
+
+        .scores-center-group {
+            display: flex;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .custom-rect { 
+            flex: 1; 
+            height: 72px; 
+            background: #1a252f; 
+            border: 2.5px solid #FFD700; 
+            border-radius: 8px; 
+            box-shadow: 0 5px 0 #0f171e; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            transition: all 0.3s ease; 
+        }
+        .sum-text { font-size: 2.2em; font-weight: 900; color: #00ffcc; line-height: 1; font-family: 'Arial Black', sans-serif; }
+        
+        .flash-glow { animation: quickFlash 0.35s ease forwards; }
+        @keyframes quickFlash {
+            0% { background: #1a252f; }
+            50% { background: #004d40; border-color: #fff; }
+            100% { background: #1a252f; }
+        }
+
+        .winner-glow { border: 3px solid #fff !important; background: #e65100 !important; }
+
+        .small-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 450px; perspective: 1000px; padding-bottom: 5px; }
+        .flip-card { height: 55px; cursor: pointer; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .flip-card.flipped { transform: rotateY(180deg); }
+        
+        .front { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 8px; 
+            background: #000000; 
+            border: none; 
+            box-shadow: 0 5px 0 #222222; 
+            font-weight: 900; 
+            font-size: 2em; 
+            color: #FFD700; 
+        }
+        
+        .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 8px; background: white; transform: rotateY(180deg); border: 1.5px solid #ddd; font-weight: 900; transition: all 0.3s ease; }
+        
+        .val-text { font-size: 2.1em; color: black; font-weight: 900; }
+        
+        .key-content-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 0.95;
+            transform: scaleY(0.85);
+        }
+        .key-text { 
+            font-size: 1.65em; 
+            color: #FFD700; 
+            font-weight: 900; 
+        }
+        .key-icon { 
+            font-size: 1.35em; 
+            margin-bottom: -2px; 
+        }
+        
+        /* التوهج مخصص حصرياً لمربع المفتاح (1000) فقط */
+        .glowing-gold { 
+            animation: superPulse 0.5s infinite alternate !important; 
+            border: 3px solid #FFD700 !important; 
+            background: #fffdf0 !important; 
+        }
+        @keyframes superPulse { 
+            0% { transform: scale(1) rotateY(180deg); box-shadow: 0 0 6px gold, inset 0 0 10px rgba(255, 215, 0, 0.5); filter: brightness(1); } 
+            100% { transform: scale(1.04) rotateY(180deg); box-shadow: 0 0 22px #fff, 0 0 35px gold, inset 0 0 20px rgba(255, 255, 255, 0.9); filter: brightness(1.25); } 
+        }
+
+        .row-glow-effect {
+            border: 3px solid #00897b !important;
+            background: #e0f2f1 !important;
+        }
+    </style>
 </head>
-<body onclick="initAudio(); tryFS();">
+<body onclick="makeFullScreen()">
+    <div class="game-viewport" id="gameViewport">
+        <div class="top-panel-wrapper">
+            <div class="side-column">
+                <div class="mode-btn" onclick="playSound('click'); setMode(3)">3</div>
+                <div class="mode-btn" onclick="playSound('click'); setMode(4)">4</div>
+                <div class="mode-btn" onclick="playSound('click'); setMode(5)">5</div>
+            </div>
 
-<datalist id="namesList"></datalist>
+            <div class="scores-center-group">
+                <div id="rect1" class="custom-rect"><div id="box1" class="sum-text">0</div></div>
+                <div id="rect2" class="custom-rect"><div id="box2" class="sum-text">0</div></div>
+            </div>
 
-<div class="modal" id="settingsModal" style="display:flex;">
-  <div class="modal-box">
-    <div class="modal-title">العب بومب مع حسام</div>
-    <div class="opt-row"><span>عدد الفرق:</span><select id="teamCountSel" onchange="generateInputs()"><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
-    <div id="teamArea" class="team-inputs-grid"></div>
-
-    <div class="opt-row" style="margin-top:20px;">
-        <select id="gridSizeSel" onchange="onGridSizeChange()">
-            <option value="25">25 مربع</option>
-            <option value="40" selected>40 مربع</option>
-            <option value="50">50 مربع</option>
-        </select>
-        <select id="bombCountSel">
-            <option value="1">1 قنبلة</option>
-            <option value="2" selected>2 قنبلة</option>
-            <option value="3">3 قنابل</option>
-            <option value="4">4 قنابل</option>
-            <option value="5">5 قنابل</option>
-        </select>
-    </div>
-    <button onclick="startNewGame()" class="start-btn">ابدأ التحدي الآن</button>
-  </div>
-</div>
-
-<div class="top-frame" id="p1">
-  <div class="top-bar">
-    <div class="bomb-balls" id="bombBallsContainer"></div>
-    <div class="sum-box" id="currentSum">0</div>
-    <div class="main-row">
-        <div class="neon-rect" onclick="openSettings()">إعدادات</div>
-        
-        <div class="title-center" onclick="undoSquare()" style="cursor: pointer; position: relative;">
-            <div id="text1" class="tufuli-neon" style="opacity: 1; transition: opacity 0.5s;">العب بومب<br>مع حسام</div>
-            <div id="text2" class="tufuli-neon" style="opacity: 0; transition: opacity 0.5s;">أرحبوا جميعًا<br>يا إخوان 🥰</div>
+            <div class="side-column">
+                <div class="mode-btn" onclick="playSound('click'); activateKeyMode()">🔑</div>
+                <div class="mode-btn" onclick="playSound('click'); activateFreeMode()" style="font-size: 0.42em;">FREE</div>
+                <div class="mode-btn" onclick="playSound('click'); resetAndShuffle()" style="font-size: 0.38em; font-weight: 900;">MIX</div>
+            </div>
         </div>
-        
-        <div class="neon-rect" onclick="nextTurn()">اسحب</div>
+
+        <div class="small-grid" id="grid"></div>
     </div>
-    <div class="teams-row" id="teamsList"></div>
-  </div>
-</div>
 
-<div class="game-frame" id="p2">
-  <div class="game-area"><div class="grid-container" id="gameGrid"></div></div>
-</div>
-
-<script>
-   // بناء قاعدة البيانات الكاملة والثابتة لجميع الأرقام من 1 إلى 9 وكل رقم متوفر بـ 5 ألوان (إجمالي 45 عنصراً عددياً أساسياً)
-   const fullStandardNumericPool = [];
-   const colorsList = ['bg-red', 'bg-green', 'bg-blue', 'bg-yellow', 'bg-purple'];
-   
-   for(let val = 9; val >= 1; val--) {
-       colorsList.forEach(col => {
-           fullStandardNumericPool.push({t: 'n', v: val, c: col});
-       });
-   }
-
- let currentTurnHistory = [];  
- let lastTurnScore = 0;  
- let gameHistory = [];  
- let openedCount = 0; 
- let teams = [], currentTeamIdx = 0, turnPicks = [], isProcessing = false, audioCtx, cycleInterval, ballsCount = 2;
-
-function saveNamesToStorage() {
-    const names = teams.map(t => t.name);
-    let savedNames = JSON.parse(localStorage.getItem('savedNames') || '[]');
-    names.forEach(name => { if (!savedNames.includes(name)) savedNames.push(name); });
-    localStorage.setItem('savedNames', JSON.stringify(savedNames));
-    updateDataList();
-}
-
-function updateDataList() {
-    const savedNames = JSON.parse(localStorage.getItem('savedNames') || '[]');
-    const list = document.getElementById('namesList');
-    if(list) list.innerHTML = savedNames.map(n => `<option value="${n}">`).join('');
-}
-window.onload = function() {
-    updateDataList();
-    onGridSizeChange();
-};
-
-function onGridSizeChange() {
-    const gridSize = document.getElementById('gridSizeSel').value;
-    const bombSel = document.getElementById('bombCountSel');
-    if (gridSize === "25") {
-        bombSel.value = "1";
-    } else if (gridSize === "40") {
-        bombSel.value = "2";
-    } else if (gridSize === "50") {
-        bombSel.value = "3";
-    }
-}
-
-function updateSum() { 
-    let total = 0; 
-    turnPicks.forEach((p) => { 
-        if (p.t === 'n') {
-            total += p.v; 
-        } else if (p.t === 'x') {
-            if (total > 0) {
-                total *= p.v;
-            }
-        }
-    }); 
-    
-    const sumDisplay = document.getElementById('currentSum');
-    if (sumDisplay) {
-        sumDisplay.innerText = total;
-    }
-}
-
-function generateInputs() {
-    const count = document.getElementById('teamCountSel').value;
-    const area = document.getElementById('teamArea');
-    area.innerHTML = ''; 
-    
-    for(let i = 1; i <= count; i++) {
-        let input = document.createElement('input');
-        input.type = 'text';
-        input.id = `t${i}`;
-        input.className = 'team-input';
-        input.value = ''; 
-        input.setAttribute('list', 'namesList'); 
-        input.onclick = function() { this.select(); };
-        input.style.marginBottom = '10px';
-        area.appendChild(input);
-    }
-}
-
-function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-function tryFS() { if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); }
-
-function startNewGame() {
-    const grid = document.getElementById('gameGrid');
-    grid.innerHTML = ''; 
-    grid.style.display = 'none'; 
-    grid.offsetHeight; 
-    grid.style.display = 'grid'; 
-
-    currentTurnHistory = [];
-    turnPicks = [];
-    isProcessing = false;
-    currentTeamIdx = 0; 
-    ballsCount = parseInt(document.getElementById('bombCountSel').value) || 2;
-
-    const names = []; 
-    let teamCount = document.getElementById('teamCountSel').value || 2;
-    for(let i=1; i<=teamCount; i++) {
-        let val = document.getElementById(`t${i}`) ? document.getElementById(`t${i}`).value : "";
-        names.push(val || `فريق ${i}`); 
-    }
-    teams = names.map((name, i) => ({id: i, score: 0, name: name})); 
-
-    const ballsContainer = document.getElementById('bombBallsContainer');
-    ballsContainer.innerHTML = '';
-    for(let i = 1; i <= ballsCount; i++) {
-        let bDiv = document.createElement('div');
-        bDiv.className = 'ball';
-        bDiv.id = 'ball' + i;
-        ballsContainer.appendChild(bDiv);
-    }
-
-    setupGrid(parseInt(document.getElementById('gridSizeSel').value) || 40, ballsCount); 
-
-    document.getElementById('settingsModal').style.display = 'none'; 
-    saveNamesToStorage();
-    renderTeams(); 
-    updateSum();
-}
-
-function renderTeams() { 
-    const container = document.getElementById('teamsList'); 
-    container.innerHTML = teams.map((t, i) => `
-    <div class="team-box ${i === currentTeamIdx ? 'active' : ''}" id="box-${i}">
-        <input class="t-name" value="${t.name}" onchange="teams[${i}].name = this.value">
-        <input class="t-score" value="${t.score}" onchange="teams[${i}].score = parseInt(this.value)">
-    </div>`).join(''); 
-}
-
-// الاعتماد حصرياً على القيم الأصلية (من 1 إلى 9 بالألوان الخمسة)، مع مانع التشابهات والخلط العشوائي للنمطين
-function setupGrid(total, bombs) {
-    const grid = document.getElementById('gameGrid');
-    grid.innerHTML = '';
-    isProcessing = false; 
-    turnPicks = []; 
-    currentTurnHistory = [];
-    
-    let pool = [];
-
-    // 1. إضافة العناصر الخاصة (القنابل والمضاعفات)
-    for(let i = 0; i < bombs; i++) pool.push({t: 'b', v: 0, c: 'bg-white-special'});
-    for(let i = 0; i < 3; i++) pool.push({t: 'x', v: 2, c: 'bg-white-special'});
-    for(let i = 0; i < 2; i++) pool.push({t: 'x', v: 3, c: 'bg-white-special'});
-
-    // سحب النسخة الأصلية الكاملة من الأرقام القياسية (من 9 إلى 1 مع ألوانها الخمسة)
-    let standardPool = [...fullStandardNumericPool];
-
-    // خلط مبدئي لمجموعة الأرقام القياسية لضمان التنوع المسبق
-    shuffleArray(standardPool);
-
-    // تصفية ذكية لمنع تواجد أي عنصرين متشابهين تماماً (نفس الرقم واللون) متجاورين في قائمة الاختيار لتقليل التشابهات
-    let filteredStandardPool = [];
-    let lastAdded = null;
-    while(standardPool.length > 0) {
-        let item = standardPool.pop();
-        if(lastAdded && lastAdded.v === item.v && lastAdded.c === item.c) {
-            standardPool.unshift(item);
-            let altItem = standardPool.pop();
-            filteredStandardPool.push(altItem);
-            lastAdded = altItem;
-        } else {
-            filteredStandardPool.push(item);
-            lastAdded = item;
-        }
-    }
-    standardPool = filteredStandardPool;
-
-    // تعبئة عناصر الشبكة بالكامل من الأرقام الأصلية القياسية حصرياً
-    while(pool.length < total && standardPool.length > 0) {
-        pool.push(standardPool.pop());
-    }
-
-    // 2. خلط عشوائي تام وشامل للمصفوفة النهائية بـ 3 دورات لتوزيع المربعات في الشبكة بعشوائية كاملة
-    shuffleArray(pool);
-    shuffleArray(pool);
-    shuffleArray(pool);
-
-    pool.forEach((d, i) => {
-        const sq = document.createElement('div');
-        sq.className = 'square';
-        sq.id = 'sq-' + i;
-        sq.innerHTML = `<span class="outer-num">${i+1}</span><div class="inner-face ${d.c}">${(d.t==='b'?'💣':(d.t==='x'?'x'+d.v:d.v))}</div>`;
+    <script>
+        let mode = 3, keyMode = false, isKeyFound = false, revealed = false, freeMode = false;
+        let openOrder = [];
+        let items = [];
         
-        sq.onclick = () => {
-            if(isProcessing || sq.classList.contains('open')) return;
-            sq.classList.add('open');
-            currentTurnHistory.push({ id: sq.id, data: d, teamIdx: currentTeamIdx, scoreBefore: teams[currentTeamIdx].score });
-            
-            if(d.t === 'b') { 
-                isProcessing = true; 
-                setTimeout(() => triggerExplosion(), 400); 
-            } else if(turnPicks.some(p => (p.c === d.c && p.t === 'n' && d.t === 'n') || (p.v === d.v && p.t === 'n' && d.t === 'n'))) {
-                isProcessing = true; 
-                turnPicks = []; 
-                setTimeout(resetTurn, 1000);
-            } else { 
-                turnPicks.push(d); 
-                updateSum(); 
+        let scaleX = 1, scaleY = 1;
+        let initialDistanceX = 0, initialDistanceY = 0;
+        let startScaleX = 1, startScaleY = 1;
+        
+        const viewport = document.getElementById('gameViewport');
+
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistanceX = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+                initialDistanceY = Math.abs(e.touches[0].clientY - e.touches[1].clientY);
+                startScaleX = scaleX;
+                startScaleY = scaleY;
             }
-        };
-        grid.appendChild(sq);
-    });
-}  
+        }, { passive: false });
 
-function undoSquare() {
-    if (currentTurnHistory.length === 0) return;
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                let currentDistX = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+                let currentDistY = Math.abs(e.touches[0].clientY - e.touches[1].clientY);
 
-    let lastMove = currentTurnHistory.pop();
-    let sq = document.getElementById(lastMove.id);
+                if (initialDistanceX > 10) {
+                    scaleX = startScaleX * (currentDistX / initialDistanceX);
+                    scaleX = Math.max(0.6, Math.min(scaleX, 1.5));
+                }
+                if (initialDistanceY > 10) {
+                    scaleY = startScaleY * (currentDistY / initialDistanceY);
+                    scaleY = Math.max(0.5, Math.min(scaleY, 1.4));
+                }
 
-    if (sq) {
-        sq.classList.remove('open', 'shatter');
-        sq.style.opacity = '1';
-    }
+                viewport.style.transform = `scale(${scaleX}, ${scaleY})`;
+            }
+        }, { passive: false });
 
-    teams[lastMove.teamIdx].score = lastMove.scoreBefore;
-    currentTeamIdx = lastMove.teamIdx;
-
-    if (turnPicks.length > 0) {
-        turnPicks.pop();
-    }
-
-    updateSum();
-    renderTeams();
-}
-
-function resetTurn() { 
-    document.querySelectorAll('.square.open').forEach(el => { el.classList.add('shatter'); el.classList.remove('open'); }); 
-    turnPicks = []; 
-    currentTeamIdx = (currentTeamIdx + 1) % teams.length; 
-    updateSum(); 
-    setTimeout(() => { isProcessing = false; renderTeams(); }, 800); 
-}
-
-function triggerExplosion() { 
-    if(ballsCount > 0) { 
-        const targetBall = document.getElementById('ball' + ballsCount);
-        if (targetBall) {
-            targetBall.style.display = 'none'; 
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
-        ballsCount--; 
-    } 
-    playExplosionSound(); 
-    document.body.classList.add('shake'); 
-    const box = document.getElementById(`box-${currentTeamIdx}`); 
-    box.style.background = "#ff0000"; 
-    setTimeout(() => { 
-        teams[currentTeamIdx].score = 0; 
-        turnPicks = []; 
-        updateSum(); 
-        box.style.background = "#000"; 
-        resetTurn(); 
-    }, 1000); 
-}
 
-function playExplosionSound() { 
-    if (!audioCtx) return; 
-    const osc = audioCtx.createOscillator(); 
-    const gain = audioCtx.createGain(); 
-    osc.type = 'sawtooth'; 
-    osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
-    gain.gain.setValueAtTime(0.5, audioCtx.currentTime); 
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); 
-    osc.connect(gain); 
-    gain.connect(audioCtx.destination); 
-    osc.start(); 
-    osc.stop(audioCtx.currentTime + 0.5); 
-}
+        function playModernChime(valNum) {
+            try {
+                initAudio();
+                let now = audioCtx.currentTime;
+                let pentatonic = [349.23, 392.00, 440.00, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 1046.50];
+                let index = Math.floor(((valNum - 350) / (1000 - 350)) * (pentatonic.length - 1));
+                if (index < 0) index = 0;
+                if (index >= pentatonic.length) index = pentatonic.length - 1;
+                
+                let freq = pentatonic[index];
+                let chord = [freq, freq * 1.25, freq * 1.5];
 
-function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-generateInputs();
-
-setInterval(() => {
-    const t1 = document.getElementById('text1');
-    const t2 = document.getElementById('text2');
-    if (t1 && t2) {
-        if (t1.style.opacity === '0') {
-            t1.style.opacity = '1';
-            t2.style.opacity = '0';
-        } else {
-            t1.style.opacity = '0';
-            t2.style.opacity = '1';
+                chord.forEach((f, i) => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = i === 0 ? 'triangle' : 'sine';
+                    osc.frequency.setValueAtTime(f, now + (i * 0.03));
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.35, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + (i * 0.03));
+                    osc.stop(now + 0.45);
+                });
+            } catch (e) {
+                console.log(e);
+            }
         }
-    }
-}, 3000);
 
-function shuffleArray(array) {
-    const randomBuffer = new Uint32Array(1);
-    for (let i = array.length - 1; i > 0; i--) {
-        window.crypto.getRandomValues(randomBuffer);
-        let randomFraction = randomBuffer[0] / (0xffffffff + 1);
-        const j = Math.floor(randomFraction * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
+        function playSound(type, param = 0) {
+            try {
+                initAudio();
 
-function nextTurn() {
-    if (isProcessing || turnPicks.length === 0) return;
+                if (type === 'click') {
+                    let now = audioCtx.currentTime;
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.06);
+                    gain.gain.setValueAtTime(0.35, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.06);
+                } else if (type === 'gentle-reveal') {
+                    let valNum = parseInt(param);
+                    if (isNaN(valNum)) valNum = 500;
+                    playModernChime(valNum);
+                } else if (type === 'finish-sound') {
+                    let now = audioCtx.currentTime;
+                    let notes = [440, 554.37, 659.25, 880];
+                    notes.forEach((freq, idx) => {
+                        let osc = audioCtx.createOscillator();
+                        let gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + (idx * 0.08));
+                        gain.gain.setValueAtTime(0, now + (idx * 0.08));
+                        gain.gain.linearRampToValueAtTime(0.4, now + (idx * 0.08) + 0.04);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + (idx * 0.08) + 0.35);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + (idx * 0.08));
+                        osc.stop(now + (idx * 0.08) + 0.35);
+                    });
+                } else if (type === 'page-flip') {
+                    let now = audioCtx.currentTime;
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.07);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
+                } else if (type === 'ta-da') {
+                    let now = audioCtx.currentTime;
+                    let keyArpeggio = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                    keyArpeggio.forEach((freq, idx) => {
+                        let osc = audioCtx.createOscillator();
+                        let gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + (idx * 0.09));
+                        gain.gain.setValueAtTime(0, now + (idx * 0.09));
+                        gain.gain.linearRampToValueAtTime(0.45, now + (idx * 0.09) + 0.04);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + (idx * 0.09) + 0.5);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + (idx * 0.09));
+                        osc.stop(now + (idx * 0.09) + 0.5);
+                    });
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
 
-    let totalScore = 0;
-    turnPicks.forEach((p, index) => {
-        if (p.t === 'n') totalScore += p.v;
-        else if (p.t === 'x' && index > 0) totalScore *= p.v;
-    });
+        let baseItems = [
+            '1000', 
+            950, 950, 
+            900, 900, 
+            850, 850, 850, 
+            800, 800, 800, 
+            750, 750, 750, 
+            700, 700, 700, 
+            650, 650, 650, 
+            600, 600, 600, 
+            550, 550, 550, 
+            500, 500, 500, 
+            350, 350, 350  
+        ];
 
-    teams[currentTeamIdx].score += totalScore;
-    isProcessing = true; 
-    resetTurn(); 
-}
-</script>
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let round = 0; round < 5; round++) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+            return arr;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            items = shuffleArray(baseItems);
+            for(let i=0; i<32; i++) {
+                let val = items[i];
+                let isKey = (val == 1000);
+                grid.innerHTML += `
+                    <div class="flip-card" data-index="${i}" onclick="handleCardClick(${i})">
+                        <div class="front">${i+1}</div>
+                        <div class="back ${isKey ? 'glowing-gold' : ''}">
+                            ${isKey ? '<div class="key-content-box"><div class="key-icon">🔑</div><div class="key-text">1000</div></div>' : '<div class="val-text">'+val+'</div>'}
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function handleCardClick(index) {
+            const cards = document.querySelectorAll('.flip-card');
+            const el = cards[index];
+            let val = items[index];
+
+            if (keyMode) {
+                if (isKeyFound) return;
+                
+                let rowIndex = Math.floor(index / 4);
+                let startIndex = rowIndex * 4;
+
+                let rowContainsKeys = false;
+                for (let i = 0; i < 4; i++) {
+                    let targetCard = cards[startIndex + i];
+                    if (targetCard) {
+                        let cardBack = targetCard.querySelector('.back');
+                        if (cardBack.innerHTML.includes('1000')) {
+                            rowContainsKeys = true;
+                        }
+                    }
+                }
+
+                for (let i = 0; i < 4; i++) {
+                    let targetCard = cards[startIndex + i];
+                    if (targetCard && !targetCard.classList.contains('flipped')) {
+                        let cardVal = items[startIndex + i];
+                        let isKeyItem = (cardVal == 1000);
+
+                        setTimeout(() => {
+                            targetCard.classList.add('flipped');
+                            if (isKeyItem) {
+                                isKeyFound = true;
+                            } else {
+                                playSound('gentle-reveal', cardVal);
+                            }
+                        }, i * 180);
+                    }
+                }
+
+                if (rowContainsKeys) {
+                    for (let i = 0; i < 4; i++) {
+                        let targetCard = cards[startIndex + i];
+                        if (targetCard) {
+                            let cardBack = targetCard.querySelector('.back');
+                            if (!cardBack.classList.contains('row-glow-effect')) {
+                                cardBack.classList.add('row-glow-effect');
+                            }
+                        }
+                    }
+                }
+
+                setTimeout(() => {
+                    if (rowContainsKeys) {
+                        playSound('ta-da');
+                    }
+                }, 300);
+
+                return;
+            }
+
+            if (!el.classList.contains('flipped')) {
+                el.classList.add('flipped');
+                playSound('gentle-reveal', val);
+
+                if (!freeMode && !revealed) {
+                    let totalRequired = mode * 2;
+                    let currentIndexCount = openOrder.length;
+                    
+                    openOrder.push({val: val});
+                    updateSums();
+
+                    let activeRectId = (currentIndexCount < mode) ? 'rect1' : 'rect2';
+                    let activeRect = document.getElementById(activeRectId);
+                    
+                    activeRect.classList.remove('flash-glow');
+                    void activeRect.offsetWidth; 
+                    activeRect.classList.add('flash-glow');
+
+                    if (openOrder.length === totalRequired) {
+                        setTimeout(() => {
+                            playSound('finish-sound'); 
+                        }, 500);
+                    }
+                }
+            }
+        }
+
+        function updateSums() {
+            if (keyMode) {
+                document.getElementById('box1').innerText = 0;
+                document.getElementById('box2').innerText = 0;
+                return;
+            }
+
+            let s1 = 0, s2 = 0;
+            openOrder.forEach((item, index) => {
+                let val = parseInt(item.val);
+                if(index < mode) s1 += val;
+                else if(index < (mode * 2)) s2 += val;
+            });
+            
+            document.getElementById('box1').innerText = s1;
+            document.getElementById('box2').innerText = s2;
+
+            if (openOrder.length >= (mode * 2)) {
+                let rect1 = document.getElementById('rect1');
+                let rect2 = document.getElementById('rect2');
+                
+                rect1.classList.remove('winner-glow');
+                rect2.classList.remove('winner-glow');
+
+                (s1 > s2) ? rect1.classList.add('winner-glow') : (s2 > s1) ? rect2.classList.add('winner-glow') : null;
+            }
+        }
+
+        function clearSums() {
+            document.getElementById('box1').innerText = 0;
+            document.getElementById('box2').innerText = 0;
+            document.getElementById('rect1').classList.remove('winner-glow', 'flash-glow');
+            document.getElementById('rect2').classList.remove('winner-glow', 'flash-glow');
+            openOrder = [];
+        }
+
+        function resetAndShuffle() {
+            revealed = false; isKeyFound = false;
+            let cards = Array.from(document.querySelectorAll('.flip-card'));
+            for(let card of cards) {
+                card.classList.remove('flipped');
+                let cardBack = card.querySelector('.back');
+                if(cardBack) cardBack.classList.remove('row-glow-effect');
+            }
+            clearSums();
+            renderGrid();
+        }
+
+        function activateKeyMode() { 
+            keyMode = true; 
+            isKeyFound = false; 
+            freeMode = false;
+            clearSums();
+            let cards = Array.from(document.querySelectorAll('.flip-card'));
+            for(let card of cards) {
+                card.classList.remove('flipped');
+                let cardBack = card.querySelector('.back');
+                if(cardBack) cardBack.classList.remove('row-glow-effect');
+            }
+            renderGrid();
+        }
+
+        function setMode(m) { 
+            mode = m; 
+            keyMode = false; 
+            freeMode = false; 
+            resetAndShuffle(); 
+        }
+
+        function activateFreeMode() { 
+            freeMode = true; 
+            keyMode = false; 
+            clearSums(); 
+            let cards = Array.from(document.querySelectorAll('.flip-card'));
+            for(let card of cards) {
+                card.classList.remove('flipped');
+                let cardBack = card.querySelector('.back');
+                if(cardBack) cardBack.classList.remove('row-glow-effect');
+            }
+            renderGrid();
+        }
+
+        function makeFullScreen() { document.documentElement.requestFullscreen(); }
+        
+        renderGrid();
+    </script>
 </body>
 </html>
