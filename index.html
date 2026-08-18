@@ -20,6 +20,38 @@
             position: relative;
         }
 
+        /* حاوية الشريط الإعلاني المستقلة - يمكنك تعديل الارتفاع (height) وحجم الخط لتملأ الفراغ العلوي تماماً */
+        .marquee-container {
+            position: absolute;
+            top: 8px; /* المسافة من أعلى الشاشة */
+            width: 95vw;
+            max-width: 450px;
+            height: 48px; /* ارتفاع الشريط (يمكنك زيادته أو تقليله حسب الفراغ لديك) */
+            background: #1a252f;
+            border: 3px solid #b8860b;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+            box-shadow: 0 4px 0 #0f171e;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            color: #FFD700;
+            font-size: 1.25em; /* حجم الخط داخل الشريط (كبره أو صغره براحتك) */
+            font-weight: 900;
+            animation: marqueeScroll 22s linear infinite;
+            padding-right: 100%;
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
         .game-viewport {
             display: flex;
             flex-direction: column;
@@ -29,6 +61,7 @@
             transform-origin: center center;
             will-change: transform;
             z-index: 2;
+            margin-top: 42px; /* مسافة فاصلة لأسفل لكي لا يتداخل الشريط مع اللعبة */
         }
 
         .top-panel-wrapper {
@@ -159,6 +192,14 @@
     </style>
 </head>
 <body onclick="makeFullScreen()">
+
+    <!-- شريط الإعلانات المتحرك العلوي المنفصل (يمكنك التحكم بحجمه وارتفاعه من الـ CSS فوق) -->
+    <div class="marquee-container">
+        <div class="marquee-text">
+            🎁 سحب روليت على جائزة رشة (500 عملة) | الاشتراك الواحد بـ 10 عملات فقط | تقدر تشترك بأكثر من اشتراك وتقدر تسجل لأصدقائك | أهلاً وسهلاً بالجميع 🌟
+        </div>
+    </div>
+
     <div class="game-viewport" id="gameViewport">
         <div class="top-panel-wrapper">
             <div class="side-column">
